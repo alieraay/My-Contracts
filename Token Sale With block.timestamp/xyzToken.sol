@@ -1,13 +1,5 @@
-
-
-
-
-
+ 
 // This code is not complete. I will work on it. It may contain many conflicts and errors.
-
-
-
-
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
@@ -18,14 +10,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract  TokenXYZ is ERC20, Ownable {
     uint256 public constant initialSupply = 1000000 * 10 ** 18;
     uint256 public constant tokenPrice = 1 ether;
-    uint256 public constant saleDuration = 2 minutes;
+    uint256 public constant saleDuration = 5 minutes;
     uint256 public constant transferDuration = saleDuration/2;
     uint256 public remainSupply;
     uint256 public startTime;
     uint256 public endTime;
 
     address payable public fundAddress;
-
 
     bool public saleClosed;
     bool public transferClosed;
@@ -34,10 +25,11 @@ contract  TokenXYZ is ERC20, Ownable {
 
     constructor() ERC20("XYZ TOKEN","XYZ"){
         _mint(msg.sender, initialSupply);
-        fundAddress = payable(msg.sender);
+        fundAddress = payable(0xdD870fA1b7C4700F2BD7f44238821C26f7392148);
         saleClosed = false;
         transferClosed = true;
         remainSupply = totalSupply();
+        _transferOwnership(msg.sender);
     }
 
     function startSale() public onlyOwner {
@@ -46,7 +38,11 @@ contract  TokenXYZ is ERC20, Ownable {
         endTime = startTime + saleDuration;
     }
 
-    function startTransfer() public onlyOwner {}
+    function startTransfer() public onlyOwner {
+        require(!saleClosed,"Sale already closed");
+        require(block.timestamp > endTime - transferDuration,"Transfer closed,");
+        transferClosed = false;
+    }
 
     function endSale() public onlyOwner {
         require(!saleClosed,"Sale already closed");
@@ -61,26 +57,28 @@ contract  TokenXYZ is ERC20, Ownable {
         require(msg.value == tokenPrice, "Value must be 1 ether");
         require(remainSupply >= 0,"All tokens have been sold");
 
-        reservationCount[msg.sender] += 10 ** 18;
+        reservationCount[msg.sender] += 1;
         fundAddress.transfer(msg.value);
         if(block.timestamp > endTime-transferDuration){
             transferTokens();
         }
-        remainSupply -= 10 ** 18;
+        remainSupply -= 1;
     }
 
-    function transferTokens() public payable {
+    function transferTokens() public  {
         require(!transferClosed,"Transfer closed");
-        require(reservationCount[msg.sender] > 0,"You have not a token");
+        require(reservationCount[msg.sender] >= 1,"You have not a token");
 
         _transfer(owner(), msg.sender, reservationCount[msg.sender]);
         reservationCount[msg.sender] = 0;
     }
+    
+    function burnRemain() public onlyOwner {
+        require(saleClosed && transferClosed,"Wait a little bit more!");
+        _burn(owner(), balanceOf(owner()));
+    }
 
-    function burnRemain() public {
-        require(saleClosed);
-        require(transferClosed);
-        require(remainSupply > 0);
-        _transfer(owner(), 0xdD870fA1b7C4700F2BD7f44238821C26f7392148, remainSupply);
+    function getBalance() public view returns (uint256) {
+    return balanceOf(msg.sender);
     }
 }
