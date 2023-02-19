@@ -79,6 +79,6 @@ contract  TokenXYZ is ERC20, Ownable {
     }
 
     function getBalance() public view returns (uint256) {
-    return balanceOf(msg.sender);
+        return balanceOf(msg.sender);
     }
 }
