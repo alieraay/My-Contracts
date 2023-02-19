@@ -55,7 +55,7 @@ contract  TokenXYZ is ERC20, Ownable {
 
         require(!saleClosed,"Sale is over");
         require(msg.value == tokenPrice, "Value must be 1 ether");
-        require(remainSupply >= 0,"All tokens have been sold");
+        require(remainSupply > 0,"All tokens have been sold");
 
         reservationCount[msg.sender] += 1;
         fundAddress.transfer(msg.value);
