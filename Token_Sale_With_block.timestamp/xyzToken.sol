@@ -1,13 +1,13 @@
 
-// This code is not complete. I will work on it. It may contain many conflicts and errors.
-
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract  TokenXYZ is ERC20, Ownable {
+
     uint256 public constant tokenPrice = 1 ether;
     uint256 public constant saleDuration = 5 minutes;
     uint256 public constant transferDuration = saleDuration/2;
@@ -21,15 +21,13 @@ contract  TokenXYZ is ERC20, Ownable {
     bool public transferClosed;
     bool public noMoreSales;
 
-    mapping(address => uint256) reservationCount;
+    mapping(address => uint256) public reservationCount;
 
-    constructor() Ownable() ERC20("XYZ TOKEN","XYZ") {
-        
+    constructor() Ownable() ERC20("XYZ_TOKEN","XYZ") {
         fundAddress = payable(0xdD870fA1b7C4700F2BD7f44238821C26f7392148);
         saleOpen = false;
         transferClosed = true;
         noMoreSales = false;
-    
     }
 
     function startSale() public onlyOwner {
@@ -42,7 +40,8 @@ contract  TokenXYZ is ERC20, Ownable {
 
     function startTransfer() public onlyOwner {
         require(saleOpen,"Sale closed");
-        require(block.timestamp > endTime - transferDuration,"Transfer closed,");
+        require(transferClosed,"Transfer already started");
+        require(block.timestamp >= endTime - transferDuration,"Transfer closed,");
         transferClosed = false;
     }
 
@@ -55,13 +54,13 @@ contract  TokenXYZ is ERC20, Ownable {
     }
 
     function buyTokens() public payable {
-
+        require(block.timestamp < endTime,"Time is up");
         require(saleOpen,"Sale is over");
         require(remainSupply > 0);
         require(msg.value == tokenPrice, "Value must be 1 ether");
-        _mint(owner(), 1);
-        remainSupply -= 1;
-        reservationCount[msg.sender] += 1;
+        _mint(owner(), 1 * 10 ** decimals());
+        remainSupply -= 10 ** decimals();
+        reservationCount[msg.sender] += 1 * 10 ** decimals();
         fundAddress.transfer(msg.value);
         if(block.timestamp > endTime-transferDuration){
             transferTokens();
@@ -69,9 +68,9 @@ contract  TokenXYZ is ERC20, Ownable {
     }
 
     function transferTokens() public  {
+        require(block.timestamp < endTime,"Time is up");
         require(!transferClosed,"Transfer closed");
         require(reservationCount[msg.sender] >= 1,"You have not a token");
-
         _transfer(owner(), msg.sender, reservationCount[msg.sender]);
         reservationCount[msg.sender] = 0;
     }
