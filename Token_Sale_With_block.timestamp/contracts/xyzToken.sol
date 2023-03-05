@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "Token_Sale_With_block.timestamp/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "Token_Sale_With_block.timestamp/node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 contract  TokenXYZ is ERC20, Ownable {
 
@@ -25,9 +25,9 @@ contract  TokenXYZ is ERC20, Ownable {
 
     constructor() Ownable() ERC20("XYZ_TOKEN","XYZ") {
         fundAddress = payable(0xdD870fA1b7C4700F2BD7f44238821C26f7392148);
-        saleOpen = false;
+        // saleOpen = false;     --> bool degiskenlerinin ilk degeri otomatik false atanir.
         transferClosed = true;
-        noMoreSales = false;
+        // noMoreSales = false;  --> bool degiskenlerinin ilk degeri otomatik false atanir.
     }
 
     function startSale() public onlyOwner {

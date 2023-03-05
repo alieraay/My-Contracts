@@ -18,6 +18,7 @@ describe("TokenXYZ Contract", function () {
 
     it("Deploys the contract", async function() {
         expect(xyztoken.address).to.not.be.undefined;
+        console.log()
     });
 
     it("Check balances", async function() {
