@@ -5,9 +5,7 @@ coverage.json
 typechain
 typechain-types
 package-lock.json
-hardhat.config.js
 package-lock.json
-package.json
 
 
 # Hardhat files
