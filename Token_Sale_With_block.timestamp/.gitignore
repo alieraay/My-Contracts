@@ -1,0 +1,16 @@
+node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+package-lock.json
+hardhat.config.js
+package-lock.json
+package.json
+
+
+# Hardhat files
+cache
+artifacts
+
