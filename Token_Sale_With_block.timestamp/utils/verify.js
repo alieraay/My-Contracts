@@ -6,7 +6,7 @@ const verify = async (contractAddress, args) => {
     await run("verify:verify", {
       address: contractAddress,
       constructorArguments: args,
-      contract: "contracts/GameToken.sol:GameToken", //KONTRAT CALISMADIGI ICIN BU SATIR EKLENDI
+      contract: "contracts/xyzToken.sol:TokenXYZ",
     });
   } catch (e) {
     if (e.message.toLowerCase().includes("already verified")) {
